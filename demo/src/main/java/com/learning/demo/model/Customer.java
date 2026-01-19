@@ -22,7 +22,7 @@ public class Customer  extends  BaseEntity{
     @Column(name="mobile_number")
     private String mobileNumber;
 
-    @OneToOne()
+    @OneToOne(cascade = {CascadeType.REMOVE})
     @JoinColumn(name = "account_no")
     private Account account;
 }

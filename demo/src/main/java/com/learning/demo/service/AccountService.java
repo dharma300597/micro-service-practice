@@ -14,8 +14,13 @@ public interface AccountService {
      */
     CustomerDTO fetchAccount(long customerId);
     /**
-     * @param  customerId - long
+     * @param  mobileNumber - String
      * @param customerDto - CustomerDto Object
      */
-    CustomerDTO updateAccount(long customerId,CustomerDTO customerDto);
+    CustomerDTO updateAccount(String mobileNumber,CustomerDTO customerDto);
+
+    /**
+     * @param  customerMobileNumber - String
+     */
+    boolean deleteAccount(String customerMobileNumber);
 }

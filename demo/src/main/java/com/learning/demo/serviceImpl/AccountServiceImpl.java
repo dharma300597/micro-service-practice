@@ -11,7 +11,7 @@ import com.learning.demo.repository.AccountRepository;
 import com.learning.demo.repository.CustomerRepository;
 import com.learning.demo.service.AccountService;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,11 +20,11 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
-@AllArgsConstructor  //Using All args constructor will make this class constructor injection
+@RequiredArgsConstructor  //Using All args constructor will make this class constructor injection
 public class AccountServiceImpl  implements AccountService {
 
-    private AccountRepository accountsRepository;
-    private CustomerRepository customerRepository;
+    private final AccountRepository accountsRepository;
+    private final CustomerRepository customerRepository;
 
     private final Logger logger= LoggerFactory.getLogger(AccountServiceImpl.class);
 
@@ -60,16 +60,16 @@ public class AccountServiceImpl  implements AccountService {
     }
 
     /**
-     * @param customerId  - long
+     * @param mobileNumber  - String
      * @param customerDto - CustomerDto Object
      */
     @Override
     @Transactional
-    public CustomerDTO updateAccount(long customerId, CustomerDTO customerDto) {
-        Optional<Customer> customerById = customerRepository.findById(customerId);
+    public CustomerDTO updateAccount(String mobileNumber, CustomerDTO customerDto) {
+        Optional<Customer> customerById = customerRepository.findByMobileNumber(mobileNumber);
         if(customerById.isEmpty()){
-            logger.error("\"Customer not found for given ID \""+customerId);
-            throw new CustomerNotExistsException("Customer not found for given ID "+customerId);
+            logger.error("\"Customer not found for given mobile number \""+mobileNumber);
+            throw new CustomerNotExistsException("Customer not found for given mobile number  "+mobileNumber);
         }
         Customer customer = customerById.get();
         customer.setName(customerDto.getName());
@@ -78,6 +78,17 @@ public class AccountServiceImpl  implements AccountService {
         Customer savedCustomer = customerRepository.save(customer);
         customer.getAccount().setAccountType("CURRENT");
         return CustomerMapper.mapToCustomerDto(savedCustomer,new CustomerDTO());
+    }
+
+    /**
+     * @param customerMobileNumber - String
+     */
+    @Override
+    public boolean deleteAccount(String customerMobileNumber) {
+        Customer customerByMobileNumber = customerRepository.findByMobileNumber(customerMobileNumber).orElseThrow(()->new CustomerNotExistsException("Customer not found for given "+customerMobileNumber));
+        customerRepository.deleteById(customerByMobileNumber.getCustomerId());
+        return true;
+
     }
 
 
