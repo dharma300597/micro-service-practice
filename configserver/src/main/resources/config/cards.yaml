@@ -1,0 +1,33 @@
+server:
+  port: 8086
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  application:
+    name: cards
+  profiles:
+    active:
+      - prod
+  config:
+    import:
+      - "application_prod.yaml"
+      - "application_qa.yaml"
+
+build:
+  version: 1.0
+
+cards:
+  message: "Welcome to Card microservice learning"
+  contactDetails:
+    name: "John Deo - Developer"
+    email: "jdoe@gmail.com"
+  onCallSupport:
+    - 303859858985
+    - 934758437674

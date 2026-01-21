@@ -1,0 +1,34 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: accounts
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+  profiles:
+    active:
+      - prod
+  config:
+    import:
+      - "application_qa.yaml"
+      - "application_prod.yaml"
+
+build:
+  version: 1.0
+
+accounts:
+  message: "Welcome to microservice learning"
+  contactDetails:
+    name: "John Deo - Developer"
+    email: "jdoe@gmail.com"
+  onCallSupport:
+    - 303859858985
+    - 934758437674
+
