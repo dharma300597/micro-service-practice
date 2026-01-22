@@ -12,5 +12,23 @@ spring:
   application:
     name: loans
 
+  profiles:
+    active:
+      - prod
+  rabbitmq:
+    port: "5672"
+    host: "localhost"
+    username: "guest"
+    password: "guest"
+  config:
+    import: "optional:configserver:http://localhost:8071/"
+
 server:
   port: 8087
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+

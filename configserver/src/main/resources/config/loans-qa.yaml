@@ -1,8 +1,8 @@
 build:
   version: 3.0
 
-accounts:
-  message: "Welcome to microservice learning for QA environment"
+loans:
+  message: "Welcome to microservice learning for QA environment from config server"
   contactDetails:
     name: "Arun - Developer"
     email: "arunAnandhan@gmail.com"
@@ -10,7 +10,3 @@ accounts:
     - 797866742858
     - 934758436740
 
-spring:
-  config:
-    activate:
-      on-profile: "qa"

@@ -12,4 +12,22 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.H2Dialect
+  profiles:
+    active:
+      - qa
+  config:
+    import:
+      - "optional:configserver:http://localhost:8071/"
+  rabbitmq:
+    port: "5672"
+    host: "localhost"
+    username: "guest"
+    password: "guest"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 

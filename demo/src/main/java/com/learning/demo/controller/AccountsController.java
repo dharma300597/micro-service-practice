@@ -1,6 +1,7 @@
 package com.learning.demo.controller;
 
 import com.learning.demo.constants.AccountsConstants;
+import com.learning.demo.dto.AccountContactInfoDto;
 import com.learning.demo.dto.CustomerDTO;
 import com.learning.demo.dto.ErrorResponseDTO;
 import com.learning.demo.dto.ResponseDTO;
@@ -14,6 +15,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/account")
-@AllArgsConstructor
 @Tag(name = "Account and Customer related endpoints",
 description = "Here we have end-points for account crud ")
 @Validated
@@ -29,6 +32,18 @@ public class AccountsController {
 
     private AccountService accountService;
 
+    @Value("${build.version}")
+    private String buildVersion;
+
+    private Environment environment;
+
+    @Autowired
+    private AccountContactInfoDto accountContactInfoDto;
+
+    public AccountsController(AccountService accountService,Environment environment){
+        this.accountService=accountService;
+        this.environment=environment;
+    }
     @Operation(
             summary = "Account and Customer creating",
             description = "Account and Customer would be created using this API"
@@ -90,5 +105,60 @@ public class AccountsController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseDTO(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
+    }
+
+    @Operation(
+            summary = "Account Service version",
+            description = "Fetching Account Service build version"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode ="200",
+                    description ="Account data deleted Successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "Account Data Not Deleted.Please Contact dev team",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = ErrorResponseDTO.class
+                            )
+                    )
+
+            )}
+    )
+    @GetMapping("build-version")
+    public ResponseEntity<?> getBuildVersion(){
+        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+    }
+
+    @GetMapping("java-version")
+    public ResponseEntity<String> getJavaVersion(){
+        return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("JAVA_HOME"));
+    }
+
+    @Operation(
+            summary = "Account Service version",
+            description = "Fetching Contact info "
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode ="200",
+                    description ="Contact info data fetched Successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "Contact info Data Not fetched.Please Contact dev team",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = ErrorResponseDTO.class
+                            )
+                    )
+
+            )}
+    )
+    @GetMapping("contact-info")
+    public ResponseEntity<AccountContactInfoDto> getContactInfo(){
+        return ResponseEntity.status(HttpStatus.OK).body(accountContactInfoDto);
     }
 }

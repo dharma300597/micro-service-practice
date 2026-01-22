@@ -1,16 +1,11 @@
 build:
   version: 2.0
 
-loans:
-  message: "Welcome to microservice learning production environment"
+cards:
+  message: "Welcome to Card microservice learning production environment from config service"
   contactDetails:
     name: "Sudhersan Deo - Developer"
     email: "ssampath@gmail.com"
   onCallSupport:
     - 303859858985
     - 934758437674
-
-spring:
-  config:
-    activate:
-      on-profile: "prod"

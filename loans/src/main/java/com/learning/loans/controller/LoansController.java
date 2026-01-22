@@ -2,6 +2,7 @@ package com.learning.loans.controller;
 
 import com.learning.loans.constant.LoansConstants;
 import com.learning.loans.dto.ErrorResponseDto;
+import com.learning.loans.dto.LoanContactInfoDto;
 import com.learning.loans.dto.LoansDto;
 import com.learning.loans.dto.ResponseDto;
 import com.learning.loans.service.LoansService;
@@ -14,6 +15,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +33,24 @@ import org.springframework.web.bind.annotation.*;
         description = "CRUD REST APIs in EazyBank to CREATE, UPDATE, FETCH AND DELETE loan details"
 )
 @RestController
-@RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
-@AllArgsConstructor
+@RequestMapping(path = "/api/loans", produces = {MediaType.APPLICATION_JSON_VALUE})
 @Validated
 public class LoansController {
 
     private  final LoansService loansService;
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private LoanContactInfoDto loanContactInfoDto;
+
+    public LoansController(LoansService loansService){
+        this.loansService=loansService;
+    }
 
     @Operation(
             summary = "Create Loan REST API",
@@ -162,5 +178,60 @@ public class LoansController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(LoansConstants.STATUS_417, LoansConstants.MESSAGE_417_DELETE));
         }
+    }
+
+    @Operation(
+            summary = "Account Service version",
+            description = "Fetching Account Service build version"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode ="200",
+                    description ="Account data deleted Successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "Account Data Not Deleted.Please Contact dev team",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = ErrorResponseDto.class
+                            )
+                    )
+
+            )}
+    )
+    @GetMapping("build-version")
+    public ResponseEntity<?> getBuildVersion(){
+        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+    }
+
+    @GetMapping("java-version")
+    public ResponseEntity<String> getJavaVersion(){
+        return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("JAVA_HOME"));
+    }
+
+    @Operation(
+            summary = "Account Service version",
+            description = "Fetching Contact info "
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode ="200",
+                    description ="Contact info data fetched Successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "Contact info Data Not fetched.Please Contact dev team",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = ErrorResponseDto.class
+                            )
+                    )
+
+            )}
+    )
+    @GetMapping("contact-info")
+    public ResponseEntity<LoanContactInfoDto> getContactInfo(){
+        return ResponseEntity.status(HttpStatus.OK).body(loanContactInfoDto);
     }
 }

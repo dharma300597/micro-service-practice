@@ -1,6 +1,7 @@
 package com.learning.cards.controller;
 
 import com.learning.cards.constants.CardsConstant;
+import com.learning.cards.dto.CardContactInfoDto;
 import com.learning.cards.dto.CardsDto;
 import com.learning.cards.dto.ErrorResponseDto;
 import com.learning.cards.dto.ResponseDto;
@@ -14,6 +15,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +28,22 @@ import org.springframework.web.bind.annotation.*;
 )
 @RestController
 @RequestMapping("/api/cards")
-@AllArgsConstructor
+@NoArgsConstructor
 public class CardsController {
 
     private CardService cardsService;
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private CardContactInfoDto cardContactInfoDto;
+
+    public CardsController(CardService cardService){
+        this.cardsService=cardService;
+    }
 
     @Operation(
             summary = "Create Card REST API",
@@ -148,5 +165,39 @@ public class CardsController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(CardsConstant.STATUS_417, CardsConstant.MESSAGE_417_DELETE));
         }
+    }
+    @GetMapping("build-version")
+    public ResponseEntity<?> getBuildVersion(){
+        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+    }
+
+    @GetMapping("java-version")
+    public ResponseEntity<String> getJavaVersion(){
+        return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("JAVA_HOME"));
+    }
+
+    @Operation(
+            summary = "Account Service version",
+            description = "Fetching Contact info "
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode ="200",
+                    description ="Contact info data fetched Successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "Contact info Data Not fetched.Please Contact dev team",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = ErrorResponseDto.class
+                            )
+                    )
+
+            )}
+    )
+    @GetMapping("contact-info")
+    public ResponseEntity<CardContactInfoDto> getContactInfo(){
+        return ResponseEntity.status(HttpStatus.OK).body(cardContactInfoDto);
     }
 }

@@ -2,15 +2,10 @@ build:
   version: 3.0
 
 cards:
-  message: "Welcome to Card microservice learning for QA environment"
+  message: "Welcome to Card microservice learning for QA environment from config server"
   contactDetails:
     name: "Arun - Developer"
     email: "arunAnandhan@gmail.com"
   onCallSupport:
     - 797866742858
     - 934758436740
-
-spring:
-  config:
-    activate:
-      on-profile: "qa"
