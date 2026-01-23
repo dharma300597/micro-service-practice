@@ -1,0 +1,92 @@
+version: "3.9"
+
+services:
+  rabbit:
+    image: rabbitmq:3.12-management
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      retries: 10
+      timeout: 5s
+      start_period: 5s
+    networks:
+      - microservice-net
+
+  config-server:
+    build:
+      context: ./configserver
+      dockerfile: Dockerfile
+    container_name: config-server
+    ports:
+      - "8071:8071"
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    volumes:
+      - ~/.ssh:/root/.ssh:ro
+    environment:
+      GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=yes"
+    networks:
+      - microservice-net
+
+  cards:
+    build:
+      context: ./cards
+      dockerfile: Dockerfile
+    container_name: cards
+    ports:
+      - "8086:8086"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    networks:
+      - microservice-net
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+      SPRING_APPLICATION_NAME: "cards"
+
+  accounts:
+    build:
+      context: ./demo
+      dockerfile: Dockerfile
+    container_name: accounts
+    ports:
+      - "8085:8085"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    networks:
+      - microservice-net
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+      SPRING_APPLICATION_NAME: "accounts"
+
+  loans:
+    build:
+      context: ./loans
+      dockerfile: Dockerfile
+    container_name: loans
+    ports:
+      - "8087:8087"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    networks:
+      - microservice-net
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+      SPRING_APPLICATION_NAME: "loans"
+
+networks:
+  microservice-net:
+    driver: bridge

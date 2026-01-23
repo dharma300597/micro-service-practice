@@ -6,7 +6,9 @@ RUN mvn clean package -DskipTests
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-alpine
+#manually installing curl in ubuntu
+RUN apk add --no-cache curl
 WORKDIR /app
-COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/configserver-0.0.1-SNAPSHOT.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

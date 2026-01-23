@@ -22,3 +22,18 @@ encrypt:
   key: 94058608506fjoij9rt8yu89ug9jv985jgjv94859
 server:
   port: 8071
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
