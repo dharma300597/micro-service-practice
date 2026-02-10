@@ -1,20 +1,55 @@
 version: "3.9"
 
 services:
-  rabbit:
-    image: rabbitmq:3.12-management
-    hostname: rabbitmq
+  accountsdb:
+    container_name: accountsDB
     ports:
-      - 5672:5672
-      - 15672:15672
-    healthcheck:
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 10s
-      retries: 10
-      timeout: 5s
-      start_period: 5s
-    networks:
-      - microservice-net
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: accountsDB
+      MYSQL_PASSWORD: accounts
+
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+  loansdb:
+    container_name: loansDB
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: loansDB
+      MYSQL_PASSWORD: loans
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+  cardsdb:
+    container_name: cardsDB
+    ports:
+      - 3308:3306
+    environment:
+      MYSQL_DATABASE: cardsDB
+      MYSQL_PASSWORD: cards
+
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+#  rabbit:
+#    image: rabbitmq:3.12-management
+#    hostname: rabbitmq
+#    ports:
+#      - 5672:5672
+#      - 15672:15672
+#    healthcheck:
+#      test: rabbitmq-diagnostics check_port_connectivity
+#      interval: 10s
+#      retries: 10
+#      timeout: 5s
+#      start_period: 5s
+#    networks:
+#      - microservice-net
 
   config-server:
     build:
@@ -23,9 +58,9 @@ services:
     container_name: config-server
     ports:
       - "8071:8071"
-    depends_on:
-      rabbit:
-        condition: service_healthy
+#    depends_on:
+#      rabbit:
+#        condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP"
       interval: 10s
@@ -47,13 +82,22 @@ services:
     ports:
       - "8086:8086"
     depends_on:
+      cardsdb:
+        condition: service_healthy
       config-server:
         condition: service_healthy
-    networks:
-      - microservice-net
+#    networks:
+#      - microservice-net
     environment:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
       SPRING_APPLICATION_NAME: "cards"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://cardsdb:3306/cardsDB"
+
+    extends:
+      file: common-config.yml
+      service: micro-service-network
+
+
 
   accounts:
     build:
@@ -65,11 +109,19 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-    networks:
-      - microservice-net
+      accountsdb:
+        condition: service_healthy
+#    networks:
+#      - microservice-net
     environment:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
       SPRING_APPLICATION_NAME: "accounts"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsDB"
+
+    extends:
+      file: common-config.yml
+      service: micro-service-network
+
 
   loans:
     build:
@@ -79,6 +131,8 @@ services:
     ports:
       - "8087:8087"
     depends_on:
+      loansdb:
+        condition: service_healthy
       config-server:
         condition: service_healthy
     networks:
@@ -86,6 +140,10 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
       SPRING_APPLICATION_NAME: "loans"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansDB"
+    extends:
+      file: common-config.yml
+      service: micro-service-network
 
 networks:
   microservice-net:

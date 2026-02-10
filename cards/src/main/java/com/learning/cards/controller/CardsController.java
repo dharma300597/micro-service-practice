@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/cards")
 @NoArgsConstructor
 public class CardsController {
-
+    @Autowired
     private CardService cardsService;
     @Value("${build.version}")
     private String buildVersion;
