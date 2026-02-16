@@ -1,11 +1,9 @@
 package com.learning.demo.controller;
 
 import com.learning.demo.constants.AccountsConstants;
-import com.learning.demo.dto.AccountContactInfoDto;
-import com.learning.demo.dto.CustomerDTO;
-import com.learning.demo.dto.ErrorResponseDTO;
-import com.learning.demo.dto.ResponseDTO;
+import com.learning.demo.dto.*;
 import com.learning.demo.service.AccountService;
+import com.learning.demo.service.CustomerDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -32,6 +29,8 @@ public class AccountsController {
 
     private AccountService accountService;
 
+    private CustomerDetails customerDetails;
+
     @Value("${build.version}")
     private String buildVersion;
 
@@ -40,9 +39,10 @@ public class AccountsController {
     @Autowired
     private AccountContactInfoDto accountContactInfoDto;
 
-    public AccountsController(AccountService accountService,Environment environment){
+    public AccountsController(AccountService accountService,Environment environment,CustomerDetails customerDetails){
         this.accountService=accountService;
         this.environment=environment;
+        this.customerDetails=customerDetails;
     }
     @Operation(
             summary = "Account and Customer creating",
@@ -160,5 +160,11 @@ public class AccountsController {
     @GetMapping("contact-info")
     public ResponseEntity<AccountContactInfoDto> getContactInfo(){
         return ResponseEntity.status(HttpStatus.OK).body(accountContactInfoDto);
+    }
+
+    @GetMapping("customer-details")
+    public ResponseEntity<CustomerDetailsDto> getCustomerDetail(@RequestParam String mobileNumber){
+        CustomerDetailsDto customerDetailsDto = customerDetails.fetchCustomerDetails(mobileNumber);
+        return ResponseEntity.status(HttpStatus.FOUND).body(customerDetailsDto);
     }
 }

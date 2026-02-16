@@ -74,6 +74,26 @@ services:
     networks:
       - microservice-net
 
+  eurekaserver:
+    build:
+      context: ./eurekaserver
+      dockerfile: Dockerfile
+    container_name: eurekaserver
+    ports:
+      - "8070:8070"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
   cards:
     build:
       context: ./cards
@@ -84,18 +104,18 @@ services:
     depends_on:
       cardsdb:
         condition: service_healthy
-      config-server:
+      eurekaserver:
         condition: service_healthy
 #    networks:
 #      - microservice-net
     environment:
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
       SPRING_APPLICATION_NAME: "cards"
       SPRING_DATASOURCE_URL: "jdbc:mysql://cardsdb:3306/cardsDB"
 
     extends:
       file: common-config.yml
-      service: micro-service-network
+      service: microservice-eureka-config
 
 
 
@@ -107,20 +127,20 @@ services:
     ports:
       - "8085:8085"
     depends_on:
-      config-server:
+      eurekaserver:
         condition: service_healthy
       accountsdb:
         condition: service_healthy
 #    networks:
 #      - microservice-net
     environment:
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
       SPRING_APPLICATION_NAME: "accounts"
       SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsDB"
 
     extends:
       file: common-config.yml
-      service: micro-service-network
+      service: microservice-eureka-config
 
 
   loans:
@@ -133,17 +153,17 @@ services:
     depends_on:
       loansdb:
         condition: service_healthy
-      config-server:
+      eurekaserver:
         condition: service_healthy
     networks:
       - microservice-net
     environment:
-      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
+#      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
       SPRING_APPLICATION_NAME: "loans"
       SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansDB"
     extends:
       file: common-config.yml
-      service: micro-service-network
+      service: microservice-eureka-config
 
 networks:
   microservice-net:

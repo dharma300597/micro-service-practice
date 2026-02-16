@@ -15,3 +15,16 @@ services:
       MYSQL_USER: admin
     extends:
       service: micro-service-network
+
+  microservice-configserver-config:
+    extends:
+      service: micro-service-network
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8071
+
+  microservice-eureka-config:
+    extends:
+      service: microservice-configserver-config
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/

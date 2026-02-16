@@ -6,7 +6,7 @@
   </component>
   <component name="DBNavigator.Project.DataEditorManager">
     <record-view-column-sorting-type value="BY_INDEX" />
-    <value-preview-text-wrapping value="true" />
+    <value-preview-text-wrapping value="false" />
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DatabaseAssistantManager">
@@ -91,16 +91,7 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="0fa4dcb4-0430-4a85-ba8e-9649ab21053a" object-ref="schemas/loansDB/tables/loans" />
-      <object connection-id="53823b60-20b5-468f-96f8-043333eb1efc" object-ref="schemas/cardsDB/tables/cards" />
-      <object connection-id="b67eb890-babf-4f73-ab67-ac6076f757e4" object-ref="schemas/loansDB/tables/loans" />
-      <object connection-id="f4df18ea-35e9-4143-9880-ef2448e15504" object-ref="schemas/accountsDB/tables/customer" />
-      <object connection-id="8699ca62-b284-44e8-8a4c-aab0ef9c3d31" object-ref="schemas/cardsDB/tables/cards" />
-      <object connection-id="a550117e-ca8a-4d57-a1ed-85ead5456a9b" object-ref="schemas/accountsDB/tables/customer" />
-      <object connection-id="f4df18ea-35e9-4143-9880-ef2448e15504" object-ref="schemas/accountsDB/tables/account" />
-      <object connection-id="a550117e-ca8a-4d57-a1ed-85ead5456a9b" object-ref="schemas/accountsDB/tables/account" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabasePrerequisiteManager">
     <prerequisites />
@@ -634,7 +625,7 @@
           <azure-token-tenant-id value="" />
           <azure-token-client-id value="" />
           <azure-token-client-certificate-file value="" />
-          <session-user value="admin@172.19.0.1" />
+          <session-user value="admin@172.17.0.1" />
         </database>
         <properties>
           <auto-commit value="false" />
@@ -755,7 +746,7 @@
           <azure-token-tenant-id value="" />
           <azure-token-client-id value="" />
           <azure-token-client-certificate-file value="" />
-          <session-user value="admin@172.19.0.1" />
+          <session-user value="admin@172.17.0.1" />
         </database>
         <properties>
           <auto-commit value="false" />
@@ -876,7 +867,7 @@
           <azure-token-tenant-id value="" />
           <azure-token-client-id value="" />
           <azure-token-client-certificate-file value="" />
-          <session-user value="admin@172.19.0.1" />
+          <session-user value="admin@172.17.0.1" />
         </database>
         <properties>
           <auto-commit value="false" />

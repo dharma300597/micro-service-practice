@@ -26,10 +26,33 @@ spring:
 #    username: "guest"
 #    password: "guest"
 
+#Below shutdown value is given to unrestricted for your microservice to shut down gracefully
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+  endpoint:
+    shutdown:
+      access: UNRESTRICTED
+  info:
+    env:
+      enabled: true
+
+#By giving prefer ip address value to true will make your service to send its ip to eureka server whenever other micro services want to make interaction with your service
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8070/eureka/
+#To give information about your application in your eureka server dashboard  you can use info properties which will
+info:
+  app:
+    name: "accounts"
+    description: "Bank's Accounts Application"
+    version: "1.0.0"
 
 
