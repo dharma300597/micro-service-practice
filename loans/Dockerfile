@@ -13,8 +13,14 @@ RUN mvn -B -q clean package -DskipTests
 # ---------- Runtime stage ----------
 FROM eclipse-temurin:17-jre-jammy
 
+
+
 # Create non-root user for security
 RUN useradd -ms /bin/bash spring
+
+RUN apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

@@ -16,6 +16,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -30,6 +32,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/cards")
 @NoArgsConstructor
 public class CardsController {
+
+    private static final Logger logger= LoggerFactory.getLogger(CardsController.class);
     @Autowired
     private CardService cardsService;
     @Value("${build.version}")
@@ -90,7 +94,8 @@ public class CardsController {
     })
     @GetMapping("/fetch")
     public ResponseEntity<CardsDto> fetchCardDetails(@RequestParam @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                     String mobileNumber) {
+                                                     String mobileNumber,@RequestHeader("bank-correlation-id") String correlationId) {
+        logger.debug("Correlation fetched in Card Controller {} ",correlationId);
         CardsDto cardsDto = cardsService.fetchCard(mobileNumber);
         return ResponseEntity.status(HttpStatus.OK).body(cardsDto);
     }

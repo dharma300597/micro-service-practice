@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: gateway-server
+  config:
+    import: "optional:configserver:http://localhost:8071/"
+# discover.locator.enabled:true will till gateway service to fetch micro-service  details from service registry
+# for false value it will not automatically gets fetched you need to give custom routes configuration(RouteLocator) in configuration class
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+              #for below attribute will give your service name in lower case by default it is upper case
+              lower-case-service-id: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      access : unrestricted
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: "edge server"
+    description: "Bank's edge server application "
+    version: "1.0.0"
+
+logging:
+  level:
+    com:
+      example:
+        gateway_server: debug
+

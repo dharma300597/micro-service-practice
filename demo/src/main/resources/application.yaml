@@ -35,6 +35,14 @@ management:
   endpoint:
     shutdown:
       access: UNRESTRICTED
+    health:
+      probes:
+        enabled: true
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
   info:
     env:
       enabled: true
@@ -54,5 +62,11 @@ info:
     name: "accounts"
     description: "Bank's Accounts Application"
     version: "1.0.0"
+
+logging:
+  level:
+    com:
+      learning:
+        demo: debug
 
 

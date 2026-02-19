@@ -106,6 +106,12 @@ services:
         condition: service_healthy
       eurekaserver:
         condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8086/actuator/health/readiness | grep UP"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 #    networks:
 #      - microservice-net
     environment:
@@ -131,6 +137,12 @@ services:
         condition: service_healthy
       accountsdb:
         condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8085/actuator/health/readiness | grep UP"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 #    networks:
 #      - microservice-net
     environment:
@@ -155,12 +167,42 @@ services:
         condition: service_healthy
       eurekaserver:
         condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8087/actuator/health/readiness | grep UP"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     networks:
       - microservice-net
     environment:
 #      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8071"
       SPRING_APPLICATION_NAME: "loans"
       SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansDB"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+  gateway-server:
+    build:
+      context: ./gateway-server
+      dockerfile: Dockerfile
+    container_name: gateway-server
+    ports:
+      - "8072:8072"
+    depends_on:
+      accounts:
+        condition: service_healthy
+      loans:
+        condition: service_healthy
+      cards:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8072/actuator/health/readiness | grep UP"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     extends:
       file: common-config.yml
       service: microservice-eureka-config

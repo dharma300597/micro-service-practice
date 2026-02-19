@@ -35,7 +35,7 @@ public class CustomerDetailImpl implements CustomerDetails {
      * @return Customer Details based on a given mobileNumber
      */
     @Override
-    public CustomerDetailsDto fetchCustomerDetails(String mobileNumber) {
+    public CustomerDetailsDto fetchCustomerDetails(String mobileNumber,String correlationId) {
 
         Customer byMobileNumber = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(()-> new CustomerNotExistsException("Customer Not Fount For Given Mobile number "+mobileNumber));
         Account accounts = accountRepository.findByCustomerId(byMobileNumber.getCustomerId()).orElseThrow(
@@ -45,9 +45,9 @@ public class CustomerDetailImpl implements CustomerDetails {
         CustomerDetailsDto customerDetailsDto = customerDetailsMapper.mapToCustomerDetailsDto(byMobileNumber, new CustomerDetailsDto());
         customerDetailsDto.setAccountsDto(AccountMapper.mapToAccountsDto(accounts, new AccountsDTO()));
 
-        ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCardDetails(mobileNumber);
+        ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCardDetails(mobileNumber,correlationId);
         customerDetailsDto.setCardsDto(cardsDtoResponseEntity.getBody());
-        ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoanDetails(mobileNumber);
+        ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoanDetails(mobileNumber,correlationId);
         customerDetailsDto.setLoansDto(loansDtoResponseEntity.getBody());
         return customerDetailsDto;
     }

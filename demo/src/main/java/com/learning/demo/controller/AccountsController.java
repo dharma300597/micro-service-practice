@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -20,12 +22,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/api/account")
 @Tag(name = "Account and Customer related endpoints",
 description = "Here we have end-points for account crud ")
 @Validated
 public class AccountsController {
+
+    private static final Logger logger= LoggerFactory.getLogger(AccountsController.class);
 
     private AccountService accountService;
 
@@ -162,9 +167,33 @@ public class AccountsController {
         return ResponseEntity.status(HttpStatus.OK).body(accountContactInfoDto);
     }
 
+    @Operation(
+            summary = "Account Service version",
+            description = "Fetching customer detail "
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode ="200",
+                    description ="customer detail data fetched Successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "417",
+                    description = "customer detail Data Not fetched.Please Contact dev team",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = ErrorResponseDTO.class
+                            )
+                    )
+
+            )}
+    )
     @GetMapping("customer-details")
-    public ResponseEntity<CustomerDetailsDto> getCustomerDetail(@RequestParam String mobileNumber){
-        CustomerDetailsDto customerDetailsDto = customerDetails.fetchCustomerDetails(mobileNumber);
+    public ResponseEntity<CustomerDetailsDto> getCustomerDetail(
+            @RequestHeader("bank-correlation-id") String correlationId,
+            @RequestParam
+            @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits") String mobileNumber){
+        logger.debug("Bank Correlation-id found {} ",correlationId);
+        CustomerDetailsDto customerDetailsDto = customerDetails.fetchCustomerDetails(mobileNumber,correlationId);
         return ResponseEntity.status(HttpStatus.FOUND).body(customerDetailsDto);
     }
 }
