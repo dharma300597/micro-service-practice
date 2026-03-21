@@ -173,7 +173,9 @@ public class CardsController {
     }
     @GetMapping("build-version")
     public ResponseEntity<?> getBuildVersion(){
-        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+        logger.debug("build version called ");
+        throw new RuntimeException();
+//        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
     }
 
     @GetMapping("java-version")

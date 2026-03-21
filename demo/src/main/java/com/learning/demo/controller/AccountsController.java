@@ -4,6 +4,7 @@ import com.learning.demo.constants.AccountsConstants;
 import com.learning.demo.dto.*;
 import com.learning.demo.service.AccountService;
 import com.learning.demo.service.CustomerDetails;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -132,10 +133,14 @@ public class AccountsController {
 
             )}
     )
+    @Retry(name = "getBuildInfo",fallbackMethod = "getBuildInfoFallback")
     @GetMapping("build-version")
     public ResponseEntity<?> getBuildVersion(){
-        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+        logger.debug("build-version api call is invoked");
+        throw new RuntimeException("Dummy exception");
+        //return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
     }
+
 
     @GetMapping("java-version")
     public ResponseEntity<String> getJavaVersion(){
@@ -195,5 +200,13 @@ public class AccountsController {
         logger.debug("Bank Correlation-id found {} ",correlationId);
         CustomerDetailsDto customerDetailsDto = customerDetails.fetchCustomerDetails(mobileNumber,correlationId);
         return ResponseEntity.status(HttpStatus.FOUND).body(customerDetailsDto);
+    }
+
+    //This is fall back method for retry
+    public ResponseEntity<String> getBuildInfoFallback(Throwable throwable) {
+        logger.debug("getBuildInfoFallback() method Invoked");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("0.9");
     }
 }

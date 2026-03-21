@@ -38,3 +38,13 @@ logging:
       example:
         gateway_server: debug
 
+#These properties only enabled after adding dependency in pom.xml
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 2
+      FailureRateThreshold: 50
+      waitDurationInOpenState : 10000
+
+
