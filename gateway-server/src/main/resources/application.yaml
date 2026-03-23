@@ -25,6 +25,9 @@ management:
   info:
     env:
       enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 info:
   app:
@@ -37,6 +40,8 @@ logging:
     com:
       example:
         gateway_server: debug
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
 #These properties only enabled after adding dependency in pom.xml
 resilience4j.circuitbreaker:

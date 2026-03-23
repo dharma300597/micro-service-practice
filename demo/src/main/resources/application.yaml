@@ -51,6 +51,10 @@ management:
     env:
       enabled: true
 
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 #By giving prefer ip address value to true will make your service to send its ip to eureka server whenever other micro services want to make interaction with your service
 eureka:
   instance:
@@ -72,6 +76,8 @@ logging:
     com:
       learning:
         demo: debug
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
 resilience4j.circuitbreaker:
   configs:

@@ -2,6 +2,18 @@ services:
   micro-service-network:
     networks:
       - microservice-net
+
+  micro-service-base-config:
+    extends:
+      service: micro-service-network
+    environment:
+      JAVA_TOOL_OPTIONS: "-javaagent:/app/opentelemetry-javaagent.jar"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: none
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+
   microservice-db-config:
     image: mysql
     healthcheck:
@@ -18,7 +30,7 @@ services:
 
   microservice-configserver-config:
     extends:
-      service: micro-service-network
+      service: micro-service-base-config
     environment:
       SPRING_PROFILES_ACTIVE: default
       SPRING_CONFIG_IMPORT: configserver:http://config-server:8071
